@@ -1,5 +1,7 @@
 package com.cos.security1.config;
 
+import com.cos.security1.config.oauth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -7,6 +9,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+// 1. 코드 받기(인증됨) 2. 코드를 통해 액세스 토큰 받기(권한이 있음)
+// 3. 사용자 프로필 정보 가져오고 4-1. 그 정보를 통해서 회원가입을 자동으로 진행시키기도 함
+// 4-2. (이메일, 전화번호, 이름, 아이디) 쇼핑몰 -> 집 주소 필요, 백화점몰 -> vip 등급 등 추가적인 정보가 필요하면, 추가적인 회원가입 화면 필요
 
 @Configuration
 @EnableWebSecurity // 활성화: 스프링 시큐리티 필터(SecurityConfig)가 스프링 필터체인에 등록됨
@@ -20,8 +26,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
+
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable(); // CSRF 비활성화
         http.authorizeRequests()
                 .antMatchers("/user/**").authenticated() // 인증만 되면 들어갈 수 있는 주소
@@ -35,7 +44,9 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/")
                 .and()
                 .oauth2Login()
-                .loginPage("/loginForm"); // 현재 단계에서는 없어도 상관없음, 구글 로그인이 완료(인증)된 후의 후처리가 필요함
+                .loginPage("/loginForm") // 구글 로그인이 완료(인증)된 후의 후처리가 필요함. Tip. 구글 로그인이 완료되면, 코드X, (액세스토큰 + 사용자 프로필 정보 O)
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService);
 
         return http.build();
     }
