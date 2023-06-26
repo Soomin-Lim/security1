@@ -30,9 +30,12 @@ public class SecurityConfig {
                 .anyRequest().permitAll() // 다른 요청은 모든 사용자 허용 -> 다른 주소는 누구나 접속할 수 있음
                 .and()
                 .formLogin()
-                .loginPage("/loginForm")
+                .loginPage("/loginForm") // 인증이 필요하면 무조건 loginForm으로 이동함
                 .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해줍니다.
-                .defaultSuccessUrl("/");
+                .defaultSuccessUrl("/")
+                .and()
+                .oauth2Login()
+                .loginPage("/loginForm"); // 현재 단계에서는 없어도 상관없음, 구글 로그인이 완료(인증)된 후의 후처리가 필요함
 
         return http.build();
     }
