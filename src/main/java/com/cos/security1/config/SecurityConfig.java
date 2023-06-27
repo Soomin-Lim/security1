@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 // 1. 코드 받기(인증됨) 2. 코드를 통해 액세스 토큰 받기(권한이 있음)
@@ -15,16 +14,17 @@ import org.springframework.security.web.SecurityFilterChain;
 // 4-2. (이메일, 전화번호, 이름, 아이디) 쇼핑몰 -> 집 주소 필요, 백화점몰 -> vip 등급 등 추가적인 정보가 필요하면, 추가적인 회원가입 화면 필요
 
 @Configuration
-@EnableWebSecurity // 활성화: 스프링 시큐리티 필터(SecurityConfig)가 스프링 필터체인에 등록됨
+//@EnableWebSecurity // 활성화: 스프링 시큐리티 필터(SecurityConfig)가 스프링 필터체인에 등록됨
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) // Secured 어노테이션 활성화, PreAuthorize 어노테이션 활성화
 public class SecurityConfig {
 
-    // 패스워드 암호화 빈 등록
-    // 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해줌
-    @Bean
-    public BCryptPasswordEncoder encodePwd() {
-        return new BCryptPasswordEncoder();
-    }
+//    // 패스워드 암호화 빈 등록
+//    // 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해줌
+//    securityConfig와 principalOauth2UserService 사이에서 순환참조 오류가 나므로, 클래스 생성하여 따로 빈 등록 후 주석처리
+//    @Bean
+//    public BCryptPasswordEncoder encodePwd() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     @Autowired
     private PrincipalOauth2UserService principalOauth2UserService;
